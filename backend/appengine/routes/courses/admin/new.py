@@ -13,7 +13,7 @@ def index():
     return TemplateResponse({'save_path': router.to_path(save)},'courses/admin/form.html')
 
 
-def save(_handler, course_id=None, **course_properties):
+def save(_handler,  **course_properties):
     cmd = facade.save_course_cmd(**course_properties)
     try:
         cmd()
