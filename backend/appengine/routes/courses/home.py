@@ -16,7 +16,7 @@ class FormGenerico(Form):
 @login_not_required
 @no_csrf
 def index():
-    form=FormGenerico(idade='2','02')
+    form=FormGenerico()
     error=form.validate()
     logging.error(error)
 

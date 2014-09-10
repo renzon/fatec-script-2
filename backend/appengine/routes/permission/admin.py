@@ -19,7 +19,7 @@ def index():
 
 @permissions(ADMIN)
 def list_users(email_prefix='', cursor=None):
-    cmd = facade.find_users_by_email_starting_with(email_prefix, cursor)
+    cmd = facade.find_users_by_email_starting_with(email_prefix, cursor,2)
     users = cmd.execute().result
 
     def to_dict(user):

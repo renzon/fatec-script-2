@@ -8,6 +8,7 @@
                 <h1>Formulario De Escravo</h1>
                 <form action="{{ salvar_path }}" method="post">
                     {{ csrf_input() }}
+                    {{ form_input('Email do dono','email_dono',_logged_user.email,'') }}
                     {{ form_input('Nome','name',escravo.name,erros.name) }}
                     {{ form_input('Idade','age',escravo.age,erros.age) }}
                     {{ form_input('Nascimento','birth',escravo.birth,erros.birth) }}
