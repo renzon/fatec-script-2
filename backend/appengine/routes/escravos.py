@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-from google.appengine.ext import ndb
 from config.template_middleware import TemplateResponse
-from gaebusiness.business import CommandParallel, CommandSequential
-from gaebusiness.gaeutil import SaveCommand
+from escravo_app import facade as escravo_facade
+from gaebusiness.business import CommandExecutionException
 from gaecookie.decorator import no_csrf
-from gaeforms import base
-from gaeforms.ndb.form import ModelForm
-from gaegraph.business_base import SingleDestinationSearch, CreateArc, CreateSingleArc, DestinationsSearch
-from gaegraph.model import Node, Arc
 from gaepermission import facade
 from tekton import router
 from tekton.gae.middleware.redirect import RedirectResponse
@@ -16,9 +11,10 @@ from tekton.gae.middleware.redirect import RedirectResponse
 
 @no_csrf
 def index(_logged_user):
-    busca=DestinationsSearch(DonoArco,_logged_user)
-    escravos=busca()
-    escravo_form_short = EscravoShort()
+    busca = escravo_facade.listar_escravos_de_dono(_logged_user)
+
+    escravos = busca()
+    escravo_form_short = escravo_facade.escravo_form_short()
     escravos = [escravo_form_short.fill_with_model(e) for e in escravos]
     editar_form_path = router.to_path(editar_form)
     deletar_path = router.to_path(deletar)
@@ -31,16 +27,16 @@ def index(_logged_user):
 
 
 def deletar(escravo_id):
-    chave = ndb.Key(Escravo, int(escravo_id))
-    chave.delete()
+    deletar_cmd = escravo_facade.deletar_escravos_cmd(escravo_id)
+    deletar_cmd()
     return RedirectResponse(router.to_path(index))
 
 
 @no_csrf
 def editar_form(escravo_id):
-    escravo_id = int(escravo_id)
-    escravo = Escravo.get_by_id(escravo_id)
-    escravo_form = EscravoForm()
+    escravo_por_id_cmd = escravo_facade.get_escravo_por_id_cmd(escravo_id)
+    escravo = escravo_por_id_cmd()
+    escravo_form = escravo_facade.escravo_form()
     escravo_form.fill_with_model(escravo)
     contexto = {'salvar_path': router.to_path(editar, escravo_id),
                 'escravo': escravo_form}
@@ -48,19 +44,15 @@ def editar_form(escravo_id):
 
 
 def editar(escravo_id, **kwargs):
-    escravo_form = EscravoForm(**kwargs)
-    erros = escravo_form.validate()
-    if erros:
-        contexto = {'salvar_path': router.to_path(salvar),
-                    'escravo': escravo_form,
-                    'erros': erros}
-        return TemplateResponse(contexto, 'escravos/form.html')
-    else:
-        escravo_id = int(escravo_id)
-        escravo = Escravo.get_by_id(escravo_id)
-        escravo_form.fill_model(escravo)
-        escravo.put()
+    editar_escravo_cmd = escravo_facade.editar_escravo_cmd(escravo_id, **kwargs)
+    try:
+        editar_escravo_cmd()
         return RedirectResponse(router.to_path(index))
+    except CommandExecutionException:
+        contexto = {'salvar_path': router.to_path(editar),
+                    'escravo': kwargs,
+                    'erros': editar_escravo_cmd.errors}
+        return TemplateResponse(contexto, 'escravos/form.html')
 
 
 @no_csrf
@@ -69,45 +61,17 @@ def form():
     return TemplateResponse(contexto)
 
 
-class Escravo(Node):
-    name = ndb.StringProperty(required=True)
-    age = ndb.IntegerProperty()
-    birth = ndb.DateProperty(auto_now=True)
-    price = ndb.FloatProperty()
-    estatura = ndb.FloatProperty()
-
-
-class DonoArco(Arc):
-    destination = ndb.KeyProperty(Escravo, required=True)
-
-
-class EscravoShort(ModelForm):
-    _model_class = Escravo
-    _include = [Escravo.birth, Escravo.name, Escravo.price]
-
-
-class EscravoForm(ModelForm):
-    _model_class = Escravo
-    _include = [Escravo.birth, Escravo.name, Escravo.price, Escravo.age, Escravo.estatura]
-
-
-class SalvarEscravo(SaveCommand):
-    _model_form_class = EscravoForm
-
-
-
-
 def salvar(email_dono, **kwargs):
     cmd = facade.get_user_by_email(email_dono)
-    salvar_escravo_comando = SalvarEscravo(**kwargs)
-    salvar_dono_de_escravo=CreateSingleArc(DonoArco,cmd,salvar_escravo_comando)
-    salvar_dono_de_escravo.execute()
-    if salvar_dono_de_escravo.errors:
+    salvar_dono_de_escravo =  escravo_facade.salvar_escravo(cmd,**kwargs)
+    try:
+        salvar_dono_de_escravo.execute()
+        return RedirectResponse(router.to_path(index))
+    except CommandExecutionException:
         contexto = {'salvar_path': router.to_path(salvar),
                     'escravo': kwargs,
                     'erros': salvar_dono_de_escravo.errors}
         return TemplateResponse(contexto, 'escravos/form.html')
-    return RedirectResponse(router.to_path(index))
 
 
 
