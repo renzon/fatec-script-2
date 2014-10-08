@@ -28,7 +28,8 @@ def update(book_id, **book_properties):
     cmd = facade.update_book_cmd(book_id, **book_properties)
     return _save_or_update_json_response(cmd)
 
-
+@login_required
+@no_csrf
 def delete(book_id):
     facade.delete_book_cmd(book_id)()
 

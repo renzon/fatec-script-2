@@ -10,6 +10,7 @@
 
 
                 <button id="novo-curso-botao" class="btn btn-success">{% trans %}Create New Book{% endtrans %}</button>
+
                 <hr/>
 
                 <div id="form-div">
@@ -30,6 +31,7 @@
                             </div>
 
                             <button id="salvar-curso-btn" class="btn btn-success">Salvar</button>
+                            <img id="ajax-loader" src="/static/img/ajax.gif" />
                         </div>
                     </div>
                 </div>
@@ -45,25 +47,8 @@
                             <th>{% trans %}Title{% endtrans %}</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        {% for book in books %}
-                            <tr>
-                                <td><a href="{{ book.edit_path }}" class="btn btn-success btn-sm"><i
-                                        class="glyphicon glyphicon-pencil"></i></a></td>
-                                <td>{{ book.id }}</td>
-                                <td>{{ book.creation }}</td>
-                                <td>{{ book.price }}</td>
-                                <td>{{ book.title }}</td>
-                                <td>
-                                    <form action="{{ book.delete_path }}" method="post"
-                                          onsubmit="return confirm('{{ _('Are you sure to delete? Press cancel to avoid deletion.') }}');">
-                                        {{ csrf_input() }}
-                                        <button class="btn btn-danger btn-sm"><i
-                                                class="glyphicon glyphicon-trash"></i></button>
-                                    </form>
-                                </td>
-                            </tr>
-                        {% endfor %}
+                        <tbody id="corpo-tabela">
+
                         </tbody>
                     </table>
                 </div>
