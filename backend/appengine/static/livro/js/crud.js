@@ -1,36 +1,49 @@
-var livro_crud = angular.module('livro_crud', [])
+var livro_crud = angular.module('livro_crud', ['livro_rest'])
 
 livro_crud.directive('livroform', function () {
     return {
         restrict: 'E',
         replace: true,
-        scope: {},
+        scope: {livroSalvo: '&'},
         templateUrl: '/static/livro/html/form.html',
-        controller: ['$scope', '$http', function ($scope, $http) {
+        controller: ['$scope', '$http', 'LivroAPI', function ($scope, $http, LivroAPI) {
             $scope.livro = {title: '', price: ''};
             $scope.salvandoFlag = false;
-            $scope.erros={};
+            $scope.erros = {};
 
 
             $scope.salvar = function () {
                 if (!$scope.salvandoFlag) {
-                    $scope.erros={};
-                    var promessa = $http.post('/books/rest/save', $scope.livro);
+                    $scope.erros = {};
+                    var promessa = LivroAPI.salvar($scope.livro);
                     $scope.salvandoFlag = true;
 
                     promessa.success(function (livroDoServidor) {
+                        $scope.livroSalvo({livro:livroDoServidor});
                         $scope.salvandoFlag = false;
                         $scope.livro = {};
                     });
 
-                    promessa.error(function(erros){
+                    promessa.error(function (erros) {
                         $scope.salvandoFlag = false;
-                        $scope.erros=erros;
+                        $scope.erros = erros;
 
                     });
                 }
             }
 
+        }]
+    };
+});
+
+livro_crud.directive('livrolinha', function () {
+    return {
+        restrict: 'A',
+        replace: true,
+        scope: {livro: '='},
+        templateUrl: '/static/livro/html/linha.html',
+        controller: ['$scope', 'LivroAPI', function ($scope, LivroAPI) {
+            $scope.salvandoFlag = false;
         }]
     };
 });

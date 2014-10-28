@@ -5,7 +5,7 @@ from tekton import router
 from gaecookie.decorator import no_csrf
 from gaepermission.decorator import login_not_required
 from book_app import facade
-from routes.books import admin
+from routes.books import admin, rest
 
 
 @login_not_required
@@ -15,6 +15,9 @@ def index():
     books = cmd()
     public_form = facade.book_public_form()
     book_public_dcts = [public_form.fill_with_model(book) for book in books]
-    context = {'books': book_public_dcts,'admin_path':router.to_path(admin)}
+    context = {'books': book_public_dcts,
+               'admin_path':router.to_path(admin),
+               'salvar_path':router.to_path(rest.save),
+               'listar_path':router.to_path(rest.index)}
     return TemplateResponse(context)
 

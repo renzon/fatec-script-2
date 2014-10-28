@@ -1,16 +1,40 @@
 {% extends 'books/base.html' %}
 {% block js %}
     <script type="text/javascript" src="/static/angular/js/angular.min.js"></script>
+    {#        <script type="text/javascript" src="/static/livro/js/livro_rest_mock.js"></script>#}
     <script type="text/javascript" src="/static/livro/js/crud.js"></script>
 
     <script type="text/javascript">
-        function LivroController($scope){
-            $scope.formVisivelFlag=false;
-            $scope.livro={title:'', price:''};
+        var livroRest = angular.module('livro_rest', []);
 
-            $scope.mostrarForm=function(){
-                $scope.formVisivelFlag=!$scope.formVisivelFlag;
-            }
+        livroRest.factory('LivroAPI', ['$http', function ($http) {
+            return {
+                salvar: function (livro) {
+                    return $http.post('{{ salvar_path }}', livro);
+                },
+                listar: function () {
+                    return $http.post('{{ listar_path }}');
+                }
+            };
+
+        }]);
+
+        function LivroController($scope, LivroAPI) {
+            $scope.formVisivelFlag = false;
+            $scope.livro = {title: '', price: ''};
+            $scope.livros = [];
+
+            LivroAPI.listar().success(function (livrosDoServidor) {
+                $scope.livros = livrosDoServidor;
+            });
+
+            $scope.adicionarLivro = function (livro) {
+                $scope.livros.push(livro);
+            };
+
+            $scope.mostrarForm = function () {
+                $scope.formVisivelFlag = !$scope.formVisivelFlag;
+            };
 
         }
 
@@ -22,27 +46,25 @@
             <div class="col-md-12" ng-app="livro_crud" ng-controller="LivroController">
                 <h1>{% trans %}This is a generic home for book_app {% endtrans %}  </h1>
                 <button class="btn btn-success" ng-click="mostrarForm()">Criar Livro</button>
-            <br/>
-            <br/>
-            <br/>
-                <livroform ng-show="formVisivelFlag"></livroform>
-                <livroform ng-show="formVisivelFlag"></livroform>
-                                <hr/>
+                <br/>
+                <br/>
+                <br/>
+                <livroform ng-show="formVisivelFlag" livro-salvo="adicionarLivro(livro)"></livroform>
+                <hr/>
                 <h2>{% trans %}List of Books{% endtrans %}</h2>
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>
+                        <th>Criação</th>
+                        <th>Id</th>
                         <th>{% trans %}Price{% endtrans %}</th>
                         <th>{% trans %}Title{% endtrans %}</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for book in books %}
-                        <tr>
-                            <td>{{ book.price }}</td>
-                            <td>{{ book.title }}</td>
-                        </tr>
-                    {% endfor %}
+                    <tr ng-repeat="book in livros" livrolinha livro="book">
+
+                    </tr>
                     </tbody>
                 </table>
             </div>
