@@ -1,4 +1,9 @@
 {% extends 'books/base.html' %}
+{% block css %}
+    <style type="text/css">
+    .table>tbody>tr>td{vertical-align: middle;}
+    </style>
+{% endblock %}
 {% block js %}
     <script type="text/javascript" src="/static/angular/js/angular.min.js"></script>
     {#        <script type="text/javascript" src="/static/livro/js/livro_rest_mock.js"></script>#}
