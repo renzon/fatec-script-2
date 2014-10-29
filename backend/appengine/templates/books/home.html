@@ -22,6 +22,9 @@
                 },
                 editar: function(livro){
                     return $http.post('{{ editar_path }}',livro);
+                },
+                apagar: function(id){
+                    return $http.post('{{ apagar_path }}',{'id':id});
                 }
             };
 
@@ -38,6 +41,14 @@
 
             $scope.adicionarLivro = function (livro) {
                 $scope.livros.push(livro);
+            };
+            $scope.apagarLivro = function (id) {
+                for(var i= 0;i<$scope.livros.length;i+=1){
+                    if($scope.livros[i].id===id){
+                        $scope.livros.splice(i,1);
+                        break;
+                    }
+                }
             };
 
             $scope.mostrarForm = function () {
@@ -71,7 +82,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="book in livros" livrolinha livro="book">
+                    <tr ng-repeat="book in livros" livrolinha livro="book" livro-apagado="apagarLivro(id)">
 
                     </tr>
                     </tbody>

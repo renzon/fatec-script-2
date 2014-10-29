@@ -15,21 +15,28 @@
         <span ng-show="status==='MOSTRANDO'">{{ livro.title }}</span>
 
         <div class="form-group" ng-class="{true:'has-error',false:''}[erros.title!=null]" ng-show="status==='EDITANDO'">
-            <label  class="control-label"></label>
-            <input  type="text" class="form-control" ng-model="livroEditando.title">
+            <label class="control-label"></label>
+            <input type="text" class="form-control" ng-model="livroEditando.title">
             <span class="help-block">{{ erros.title }}</span>
         </div>
         <span ng-show="status==='SALVANDO'">{{ livroEditando.title }}</span>
     </td>
     <td>
         <span ng-show="status==='MOSTRANDO'">{{ livro.price }}</span>
+
         <div class="form-group" ng-class="{true:'has-error',false:''}[erros.price!=null]" ng-show="status==='EDITANDO'">
-            <label  class="control-label"></label>
-            <input  type="text" class="form-control" ng-model="livroEditando.price">
+            <label class="control-label"></label>
+            <input type="text" class="form-control" ng-model="livroEditando.price">
             <span class="help-block">{{ erros.price }}</span>
         </div>
         <span ng-show="status==='SALVANDO'">{{ livroEditando.price }}</span>
     </td>
     <td>{{ livro.creation }}</td>
     <td>{{ livro.id }}</td>
+    <td>
+        <button ng-show="status==='MOSTRANDO'" class="btn btn-danger"
+                ng-click="apagar()"><i class="glyphicon glyphicon-trash"></i>
+        </button>
+        <img ng-show="status==='APAGANDO'" src="/static/img/ajaxloader-face.gif"/>
+    </td>
 </tr>

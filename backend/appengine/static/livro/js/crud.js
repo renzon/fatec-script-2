@@ -40,7 +40,8 @@ livro_crud.directive('livrolinha', function () {
     return {
         restrict: 'A',
         replace: true,
-        scope: {livro: '='},
+        scope: {livro: '=',
+            livroApagado: '&'},
         templateUrl: '/static/livro/html/linha.html',
         controller: ['$scope', 'LivroAPI', function ($scope, LivroAPI) {
             $scope.status = 'MOSTRANDO';
@@ -55,7 +56,7 @@ livro_crud.directive('livrolinha', function () {
 
             $scope.mostrarInputsDeEdicao = function () {
                 $scope.status = 'EDITANDO';
-                copiarPropriedade($scope.livro,$scope.livroEditando);
+                copiarPropriedade($scope.livro, $scope.livroEditando);
             };
 
             $scope.cancelarEdicao = function () {
@@ -67,13 +68,22 @@ livro_crud.directive('livrolinha', function () {
                 LivroAPI.editar($scope.livroEditando).success(function () {
                     $scope.erros = {};
                     $scope.status = 'MOSTRANDO';
-                    copiarPropriedade($scope.livroEditando,$scope.livro);
+                    copiarPropriedade($scope.livroEditando, $scope.livro);
                 }).error(function (erros) {
                     $scope.status = 'EDITANDO';
-                    $scope.erros=erros;
+                    $scope.erros = erros;
                 });
 
             };
+
+            $scope.apagar = function () {
+                $scope.status = 'APAGANDO';
+                LivroAPI.apagar($scope.livro.id).success(function () {
+                    if($scope.livroApagado!=null){
+                        $scope.livroApagado({'id':$scope.livro.id})
+                    }
+                });
+            }
         }]
     };
 

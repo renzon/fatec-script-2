@@ -19,6 +19,7 @@ def index():
                'admin_path':router.to_path(admin),
                'salvar_path':router.to_path(rest.save),
                'editar_path':router.to_path(rest.update),
+               'apagar_path':router.to_path(rest.delete),
                'listar_path':router.to_path(rest.index)}
     return TemplateResponse(context)
 
