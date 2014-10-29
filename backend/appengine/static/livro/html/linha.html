@@ -1,7 +1,35 @@
 <tr>
-    <td><button><i class=""></i></button></td>
+    <td>
+        <button ng-show="status==='MOSTRANDO'" class="btn btn-success"
+                ng-click="mostrarInputsDeEdicao()"><i
+                class="glyphicon glyphicon-pencil"></i></button>
+        <button ng-show="status==='EDITANDO'" class="btn btn-warning"
+                ng-click="cancelarEdicao()"><i class="glyphicon glyphicon-floppy-remove"></i>
+        </button>
+        <button ng-show="status==='EDITANDO'" class="btn btn-success"
+                ng-click="salvarEdicao()"><i class="glyphicon glyphicon-floppy-save"></i>
+        </button>
+        <img ng-show="status==='SALVANDO'" src="/static/img/ajaxloader-face.gif"/>
+    </td>
+    <td>
+        <span ng-show="status==='MOSTRANDO'">{{ livro.title }}</span>
+
+        <div class="form-group" ng-class="{true:'has-error',false:''}[erros.title!=null]" ng-show="status==='EDITANDO'">
+            <label  class="control-label"></label>
+            <input  type="text" class="form-control" ng-model="livroEditando.title">
+            <span class="help-block">{{ erros.title }}</span>
+        </div>
+        <span ng-show="status==='SALVANDO'">{{ livroEditando.title }}</span>
+    </td>
+    <td>
+        <span ng-show="status==='MOSTRANDO'">{{ livro.price }}</span>
+        <div class="form-group" ng-class="{true:'has-error',false:''}[erros.price!=null]" ng-show="status==='EDITANDO'">
+            <label  class="control-label"></label>
+            <input  type="text" class="form-control" ng-model="livroEditando.price">
+            <span class="help-block">{{ erros.price }}</span>
+        </div>
+        <span ng-show="status==='SALVANDO'">{{ livroEditando.price }}</span>
+    </td>
     <td>{{ livro.creation }}</td>
     <td>{{ livro.id }}</td>
-    <td>{{ livro.price }}</td>
-    <td>{{ livro.title }}</td>
 </tr>

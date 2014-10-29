@@ -18,6 +18,7 @@ def index():
     context = {'books': book_public_dcts,
                'admin_path':router.to_path(admin),
                'salvar_path':router.to_path(rest.save),
+               'editar_path':router.to_path(rest.update),
                'listar_path':router.to_path(rest.index)}
     return TemplateResponse(context)
 

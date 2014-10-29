@@ -22,9 +22,9 @@ def save(_resp,**book_properties):
     return _save_or_update_json_response(_resp,cmd)
 
 
-def update(book_id, **book_properties):
-    cmd = facade.update_book_cmd(book_id, **book_properties)
-    return _save_or_update_json_response(cmd)
+def update(_resp,id, **book_properties):
+    cmd = facade.update_book_cmd(id, **book_properties)
+    return _save_or_update_json_response(_resp,cmd)
 
 @login_required
 def delete(book_id):

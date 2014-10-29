@@ -14,6 +14,9 @@
                 },
                 listar: function () {
                     return $http.post('{{ listar_path }}');
+                },
+                editar: function(livro){
+                    return $http.post('{{ editar_path }}',livro);
                 }
             };
 
@@ -55,11 +58,11 @@
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>
-                        <th></th>
+                        <th style="width: 100px;"></th>
+                        <th>{% trans %}Title{% endtrans %}</th>
+                        <th>{% trans %}Price{% endtrans %}</th>
                         <th>Criação</th>
                         <th>Id</th>
-                        <th>{% trans %}Price{% endtrans %}</th>
-                        <th>{% trans %}Title{% endtrans %}</th>
                     </tr>
                     </thead>
                     <tbody>

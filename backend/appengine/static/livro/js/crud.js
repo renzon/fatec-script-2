@@ -19,7 +19,7 @@ livro_crud.directive('livroform', function () {
                     $scope.salvandoFlag = true;
 
                     promessa.success(function (livroDoServidor) {
-                        $scope.livroSalvo({livro:livroDoServidor});
+                        $scope.livroSalvo({livro: livroDoServidor});
                         $scope.salvandoFlag = false;
                         $scope.livro = {};
                     });
@@ -43,7 +43,38 @@ livro_crud.directive('livrolinha', function () {
         scope: {livro: '='},
         templateUrl: '/static/livro/html/linha.html',
         controller: ['$scope', 'LivroAPI', function ($scope, LivroAPI) {
-            $scope.salvandoFlag = false;
+            $scope.status = 'MOSTRANDO';
+            $scope.livroEditando = {};
+            $scope.erros = {};
+
+            function copiarPropriedade(origem, destino) {
+                destino.id = origem.id;
+                destino.title = origem.title;
+                destino.price = origem.price;
+            }
+
+            $scope.mostrarInputsDeEdicao = function () {
+                $scope.status = 'EDITANDO';
+                copiarPropriedade($scope.livro,$scope.livroEditando);
+            };
+
+            $scope.cancelarEdicao = function () {
+                $scope.status = 'MOSTRANDO';
+            };
+
+            $scope.salvarEdicao = function () {
+                $scope.status = 'SALVANDO';
+                LivroAPI.editar($scope.livroEditando).success(function () {
+                    $scope.erros = {};
+                    $scope.status = 'MOSTRANDO';
+                    copiarPropriedade($scope.livroEditando,$scope.livro);
+                }).error(function (erros) {
+                    $scope.status = 'EDITANDO';
+                    $scope.erros=erros;
+                });
+
+            };
         }]
     };
+
 });
