@@ -38,5 +38,6 @@ def _save_or_update_json_response(_resp, cmd):
         _resp.status_code = 500
         return JsonResponse(cmd.errors)
     short_form = facade.book_short_form()
-    return JsonResponse(short_form.fill_with_model(book))
+    model = short_form.fill_with_model(book)
+    return JsonResponse(model)
 
