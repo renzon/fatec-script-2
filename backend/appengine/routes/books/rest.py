@@ -36,6 +36,7 @@ def _save_or_update_json_response(_resp, cmd):
         book = cmd()
     except CommandExecutionException:
         _resp.status_code = 500
+        _resp.get('nome')
         return JsonResponse(cmd.errors)
     short_form = facade.book_short_form()
     model = short_form.fill_with_model(book)
